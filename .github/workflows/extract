@@ -1,0 +1,30 @@
+import csv
+
+
+def convert_weekly(friday=5):
+    output = []
+    NAV_before = 1
+    NAV_max = -1
+    is_first = True 
+    for i, item in enumerate(csv.reader(open('/Users/apple/Desktop/fl_NAV.csv', 'r', encoding='utf-8'))):
+        is_friday = False
+        if i % friday == 0 and i != 0:
+            is_friday = True
+            if is_first:
+                output.append([item[0], item[1], float(item[1])-NAV_before, 0])
+                is_first = False
+            else:
+                output.append([item[0], item[1], float(item[1])-NAV_before, (float(item[1]) - NAV_max) / NAV_max])
+            NAV_before = float(item[1])
+            if float(item[1]) > NAV_max: NAV_max = float(item[1])
+    if not is_friday: output.append([item[0], item[1], float(item[1])-NAV_before, (float(item[1]) - NAV_max) / NAV_max])
+
+    writer = csv.writer(open('/Users/apple/Desktop/output1.csv', 'w', newline=''))
+    writer.writerow(['Date', 'NAV', 'Ret', 'DD'])
+    for item in output: 
+        writer.writerow(item)
+
+
+if __name__ == "__main__":
+    convert_weekly(5)
+    print("000")
